@@ -71,11 +71,11 @@ tokio-websockets = { version = "0.8", features = [
 bytes = "1.10.0"
 
 qrcode = { version = "0.14.1", default-features = false, features = [] }
-slint = { version = "1.9.2", default-features = false, features = ["compat-1-2", "unsafe-single-threaded", "libm", "renderer-software"] }
+slint = { version = "1.12.1", default-features = false, features = ["compat-1-2", "unsafe-single-threaded", "libm", "renderer-software"] }
 
 [build-dependencies]
 embuild = "0.33"
-slint-build = "1.9.2"
+slint-build = "1.12.1"
 
 [[package.metadata.esp-idf-sys.extra_components]]
 remote_component = { name = "espressif/esp-sr", version = "^2.0.0" }
