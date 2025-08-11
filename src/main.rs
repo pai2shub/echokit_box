@@ -5,11 +5,14 @@ use esp_idf_svc::eventloop::EspSystemEventLoop;
 mod app;
 mod audio;
 mod bt;
+mod esp32;
 mod hal;
 mod network;
 mod protocol;
 mod ui;
 mod ws;
+
+slint::include_modules!();
 
 #[derive(Debug, Clone)]
 struct Setting {
@@ -32,46 +35,69 @@ fn main() -> anyhow::Result<()> {
     log::info!("Initializing audio...");
     crate::hal::audio_init();
 
-    log::info!("Initializing UI...");
-    ui::lcd_init().unwrap();
+    // log::info!("Initializing UI...");
+    // ui::lcd_init().unwrap();
 
-    log_heap();
+    // log_heap();
 
-    let gif_buf = include_bytes!("../assets/rust.gif");
-    let _ = ui::backgroud(&gif_buf[..]);
-    std::thread::sleep(std::time::Duration::from_secs(10));
+    log::info!("Initializing ESP32 platform...");
+    esp32::init();
+    log::info!("ESP32 platform initialized");
 
-    // Configures the button
-    log::info!("Configuring button...");
-    let mut button = esp_idf_svc::hal::gpio::PinDriver::input(peripherals.pins.gpio0)?;
-    button.set_pull(esp_idf_svc::hal::gpio::Pull::Up)?;
-    button.set_interrupt_type(esp_idf_svc::hal::gpio::InterruptType::PosEdge)?;
-    log::info!("Button configured.");
+    log::info!("Initializing timer...");
+    let mut timer =
+        esp_idf_svc::hal::timer::TimerDriver::new(peripherals.timer00, &Default::default())
+            .unwrap();
+    log::info!("Timer initialized");
 
-    let b: tokio::runtime::Runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()?;
-    log::info!("Starting tokio runtime...");
+    log::info!("Setting up event loop...");
+    slint::spawn_local(async move {
+        for _ in 0..5 {
+            timer.delay(5 * timer.tick_hz()).await.unwrap();
+            log::info!("Echokit device is running...");
+        }
+    })
+    .unwrap();
+    log::info!("Event loop setup complete");
 
-    log::info!("Setting up device...");
-    let mut gui = ui::UI::new(None).unwrap();
+    MainWindow::new().unwrap().run().unwrap();
+    log::info!("MainWindow application started");
 
-    log_heap();
+    // let gif_buf = include_bytes!("../assets/rust.gif");
+    // let _ = ui::backgroud(&gif_buf[..]);
+    // std::thread::sleep(std::time::Duration::from_secs(10));
 
-    log::info!("Hello echokit, by Rust ESP32-S3");
-    gui.state = "Hello echokit, by Rust ESP32-S3".to_string();
-    gui.text.clear();
-    gui.display_flush().unwrap();
+    // // Configures the button
+    // log::info!("Configuring button...");
+    // let mut button = esp_idf_svc::hal::gpio::PinDriver::input(peripherals.pins.gpio0)?;
+    // button.set_pull(esp_idf_svc::hal::gpio::Pull::Up)?;
+    // button.set_interrupt_type(esp_idf_svc::hal::gpio::InterruptType::PosEdge)?;
+    // log::info!("Button configured.");
 
-    log_heap();
+    // let b: tokio::runtime::Runtime = tokio::runtime::Builder::new_current_thread()
+    //     .enable_all()
+    //     .build()?;
+    // log::info!("Starting tokio runtime...");
+
+    // log::info!("Setting up device...");
+    // let mut gui = ui::UI::new(None).unwrap();
+
+    // log_heap();
+
+    // log::info!("Hello echokit, by Rust ESP32-S3");
+    // gui.state = "Hello echokit, by Rust ESP32-S3".to_string();
+    // gui.text.clear();
+    // gui.display_flush().unwrap();
+
+    // log_heap();
 
     loop {
         std::thread::sleep(std::time::Duration::from_secs(10));
         log::info!("Device is running...");
 
-        gui.state = "Device is running...".to_string();
-        gui.text.clear();
-        gui.display_flush().unwrap();
+        // gui.state = "Device is running...".to_string();
+        // gui.text.clear();
+        // gui.display_flush().unwrap();
     }
 
     Ok(())
