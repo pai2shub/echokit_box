@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+firmware = 'target\xtensa-esp32s3-espidf\debug\echokit'
+elf = 'target\xtensa-esp32s3-espidf\debug\echokit'
+# gdbServerPort = 4399

@@ -22,6 +22,62 @@ struct Setting {
 fn main() -> anyhow::Result<()> {
     esp_idf_svc::sys::link_patches();
     esp_idf_svc::log::EspLogger::initialize_default();
+    log::info!("Starting Echokit device...");
+
+    let peripherals = esp_idf_svc::hal::prelude::Peripherals::take().unwrap();
+    let sysloop = EspSystemEventLoop::take()?;
+
+    log_heap();
+
+    log::info!("Initializing audio...");
+    crate::hal::audio_init();
+
+    log::info!("Initializing UI...");
+    ui::lcd_init().unwrap();
+
+    log_heap();
+
+    let gif_buf = include_bytes!("../assets/rust.gif");
+    let _ = ui::backgroud(&gif_buf[..]);
+    std::thread::sleep(std::time::Duration::from_secs(10));
+
+    // Configures the button
+    log::info!("Configuring button...");
+    let mut button = esp_idf_svc::hal::gpio::PinDriver::input(peripherals.pins.gpio0)?;
+    button.set_pull(esp_idf_svc::hal::gpio::Pull::Up)?;
+    button.set_interrupt_type(esp_idf_svc::hal::gpio::InterruptType::PosEdge)?;
+    log::info!("Button configured.");
+
+    let b: tokio::runtime::Runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
+    log::info!("Starting tokio runtime...");
+
+    log::info!("Setting up device...");
+    let mut gui = ui::UI::new(None).unwrap();
+
+    log_heap();
+
+    log::info!("Hello echokit, by Rust ESP32-S3");
+    gui.state = "Hello echokit, by Rust ESP32-S3".to_string();
+    gui.text.clear();
+    gui.display_flush().unwrap();
+
+    log_heap();
+
+    loop {
+        std::thread::sleep(std::time::Duration::from_secs(10));
+        log::info!("Device is running...");
+
+        gui.state = "Device is running...".to_string();
+        gui.text.clear();
+        gui.display_flush().unwrap();
+    }
+
+    Ok(())
+}
+
+fn setup() -> anyhow::Result<()> {
     let peripherals = esp_idf_svc::hal::prelude::Peripherals::take().unwrap();
     let sysloop = EspSystemEventLoop::take()?;
     let _fs = esp_idf_svc::io::vfs::MountedEventfs::mount(20)?;

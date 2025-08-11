@@ -83,7 +83,7 @@ fn init_lcd() -> Result<(), EspError> {
     esp!(unsafe { esp_lcd_new_panel_st7789(panel_io, &panel_config, &mut panel) })?;
     unsafe { ESP_LCD_PANEL_HANDLE = panel };
 
-    const DISPLAY_MIRROR_X: bool = false;
+    const DISPLAY_MIRROR_X: bool = true;
     const DISPLAY_MIRROR_Y: bool = false;
     const DISPLAY_SWAP_XY: bool = false;
     const DISPLAY_INVERT_COLOR: bool = true;
@@ -266,11 +266,10 @@ impl CharacterStyle for MyTextStyle {
 pub struct UI {
     pub state: String,
     state_area: Rectangle,
-    state_background: Vec<Pixel<ColorFormat>>,
+    // state_background: Vec<Pixel<ColorFormat>>,
     pub text: String,
     text_area: Rectangle,
-    text_background: Vec<Pixel<ColorFormat>>,
-
+    // text_background: Vec<Pixel<ColorFormat>>,
     display: Box<
         Framebuffer<
             ColorFormat,
@@ -444,6 +443,7 @@ impl qrcode::render::Canvas for QrCanvas {
 
 impl UI {
     pub fn new(backgroud_gif: Option<&[u8]>) -> anyhow::Result<Self> {
+        log::info!("Framebuffer creating");
         let mut display = Box::new(Framebuffer::<
             ColorFormat,
             _,
@@ -452,18 +452,27 @@ impl UI {
             DISPLAY_HEIGHT,
             { buffer_size::<ColorFormat>(DISPLAY_WIDTH, DISPLAY_HEIGHT) },
         >::new());
+        log::info!("Framebuffer created");
 
+        log::info!("Display creating");
         display.clear(ColorFormat::WHITE).unwrap();
+        log::info!("Display cleared");
 
+        log::info!("State area creating");
         let state_area = Rectangle::new(
             display.bounding_box().top_left + Point::new(0, 0),
             Size::new(DISPLAY_WIDTH as u32, 32),
         );
+        log::info!("State area created");
+
+        log::info!("Text area creating");
         let text_area = Rectangle::new(
             display.bounding_box().top_left + Point::new(0, 32),
             Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32 - 32),
         );
+        log::info!("Text area created");
 
+        log::info!("background creating");
         if let Some(gif) = backgroud_gif {
             let image = tinygif::Gif::<ColorFormat>::from_slice(gif)
                 .map_err(|e| anyhow::anyhow!("Failed to parse GIF: {:?}", e))?;
@@ -471,50 +480,57 @@ impl UI {
                 frame.draw(display.as_mut()).unwrap();
             }
         }
+        log::info!("background created");
 
-        let img = display.as_image();
+        // log::info!("Image creating");
+        // let img = display.as_image();
+        // log::info!("Image created");
 
-        let state_pixels: Vec<Pixel<ColorFormat>> = state_area
-            .into_styled(
-                PrimitiveStyleBuilder::new()
-                    .stroke_color(ColorFormat::CSS_DARK_BLUE)
-                    .stroke_width(1)
-                    .fill_color(ColorFormat::CSS_DARK_BLUE)
-                    .build(),
-            )
-            .pixels()
-            .map(|p| {
-                if let Some(color) = img.pixel(p.0) {
-                    Pixel(p.0, alpha_mix(color, p.1, ALPHA))
-                } else {
-                    p
-                }
-            })
-            .collect();
+        // log::info!("State pixels creating");
+        // let state_pixels: Vec<Pixel<ColorFormat>> = state_area
+        //     .into_styled(
+        //         PrimitiveStyleBuilder::new()
+        //             .stroke_color(ColorFormat::CSS_DARK_BLUE)
+        //             .stroke_width(1)
+        //             .fill_color(ColorFormat::CSS_DARK_BLUE)
+        //             .build(),
+        //     )
+        //     .pixels()
+        //     .map(|p| {
+        //         if let Some(color) = img.pixel(p.0) {
+        //             Pixel(p.0, alpha_mix(color, p.1, ALPHA))
+        //         } else {
+        //             p
+        //         }
+        //     })
+        //     .collect();
+        // log::info!("State pixels created");
 
-        let box_pixels: Vec<Pixel<ColorFormat>> = text_area
-            .into_styled(
-                PrimitiveStyleBuilder::new()
-                    .stroke_color(ColorFormat::CSS_BLACK)
-                    .stroke_width(5)
-                    .fill_color(ColorFormat::CSS_BLACK)
-                    .build(),
-            )
-            .pixels()
-            .map(|p| {
-                if let Some(color) = img.pixel(p.0) {
-                    Pixel(p.0, alpha_mix(color, p.1, ALPHA))
-                } else {
-                    p
-                }
-            })
-            .collect();
+        // log::info!("Text pixels creating");
+        // let box_pixels: Vec<Pixel<ColorFormat>> = text_area
+        //     .into_styled(
+        //         PrimitiveStyleBuilder::new()
+        //             .stroke_color(ColorFormat::CSS_BLACK)
+        //             .stroke_width(5)
+        //             .fill_color(ColorFormat::CSS_BLACK)
+        //             .build(),
+        //     )
+        //     .pixels()
+        //     .map(|p| {
+        //         if let Some(color) = img.pixel(p.0) {
+        //             Pixel(p.0, alpha_mix(color, p.1, ALPHA))
+        //         } else {
+        //             p
+        //         }
+        //     })
+        //     .collect();
+        // log::info!("Text pixels created");
 
         Ok(Self {
             state: String::new(),
-            state_background: state_pixels,
+            // state_background: state_pixels,
             text: String::new(),
-            text_background: box_pixels,
+            // text_background: box_pixels,
             display,
             state_area,
             text_area,
@@ -522,20 +538,41 @@ impl UI {
     }
 
     pub fn display_flush(&mut self) -> anyhow::Result<()> {
-        self.state_background
-            .iter()
-            .cloned()
+        log::info!("Display flush");
+        // self.state_background
+        //     .iter()
+        //     .cloned()
+        //     .draw(self.display.as_mut())?;
+        // self.text_background
+        //     .iter()
+        //     .cloned()
+        //     .draw(self.display.as_mut())?;
+
+        self.state_area
+            .into_styled(
+                PrimitiveStyleBuilder::new()
+                    .stroke_color(ColorFormat::CSS_DARK_BLUE)
+                    .stroke_width(1)
+                    .fill_color(ColorFormat::CSS_DARK_BLUE)
+                    .build(),
+            )
             .draw(self.display.as_mut())?;
-        self.text_background
-            .iter()
-            .cloned()
+
+        self.text_area
+            .into_styled(
+                PrimitiveStyleBuilder::new()
+                    .stroke_color(ColorFormat::CSS_BLACK)
+                    .stroke_width(5)
+                    .fill_color(ColorFormat::CSS_BLACK)
+                    .build(),
+            )
             .draw(self.display.as_mut())?;
 
         Text::with_alignment(
             &self.state,
             self.state_area.center(),
             U8g2TextStyle::new(
-                u8g2_fonts::fonts::u8g2_font_wqy12_t_gb2312a,
+                u8g2_fonts::fonts::u8g2_font_wqy14_t_gb2312a,
                 ColorFormat::CSS_LIGHT_CYAN,
             ),
             Alignment::Center,
@@ -590,13 +627,33 @@ impl UI {
             .module_dimensions(4, 4)
             .build();
 
-        self.state_background
-            .iter()
-            .cloned()
+        // self.state_background
+        //     .iter()
+        //     .cloned()
+        //     .draw(self.display.as_mut())?;
+        // self.text_background
+        //     .iter()
+        //     .cloned()
+        //     .draw(self.display.as_mut())?;
+
+        self.state_area
+            .into_styled(
+                PrimitiveStyleBuilder::new()
+                    .stroke_color(ColorFormat::CSS_DARK_BLUE)
+                    .stroke_width(1)
+                    .fill_color(ColorFormat::CSS_DARK_BLUE)
+                    .build(),
+            )
             .draw(self.display.as_mut())?;
-        self.text_background
-            .iter()
-            .cloned()
+
+        self.text_area
+            .into_styled(
+                PrimitiveStyleBuilder::new()
+                    .stroke_color(ColorFormat::CSS_BLACK)
+                    .stroke_width(5)
+                    .fill_color(ColorFormat::CSS_BLACK)
+                    .build(),
+            )
             .draw(self.display.as_mut())?;
 
         self.display
