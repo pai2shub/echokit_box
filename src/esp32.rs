@@ -138,8 +138,11 @@ impl slint::platform::Platform for EspPlatform {
         use slint::platform::software_renderer::Rgb565Pixel;
 
         // 在这里手动创建两个帧缓冲区，用于双缓冲。
+        log::info!("Creating frame buffer1");
         let mut buffer1 = vec![Rgb565Pixel::default(); DISPLAY_WIDTH * DISPLAY_HEIGHT];
-        let mut buffer2 = vec![Rgb565Pixel::default(); DISPLAY_WIDTH * DISPLAY_HEIGHT];
+        // log::info!("Creating frame buffer2");
+        // let mut buffer2 = vec![Rgb565Pixel::default(); DISPLAY_WIDTH * DISPLAY_HEIGHT];
+        log::info!("Entering main loop");
 
         loop {
             log::info!("Processing events");
@@ -174,7 +177,7 @@ impl slint::platform::Platform for EspPlatform {
                     log::info!("flush_display drawn to display");
                 };
                 log::info!("Swapping buffers");
-                core::mem::swap(&mut buffer1, &mut buffer2);
+                // core::mem::swap(&mut buffer1, &mut buffer2);
             });
 
             log::info!("Drawing completed, checking for active animations");
