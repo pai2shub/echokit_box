@@ -10,6 +10,7 @@ mod hal;
 mod network;
 mod protocol;
 mod ui;
+mod wifi_scan;
 mod ws;
 
 slint::include_modules!();
@@ -34,6 +35,9 @@ fn main() -> anyhow::Result<()> {
 
     log::info!("Initializing audio...");
     crate::hal::audio_init();
+
+    let modem = peripherals.modem;
+    wifi_scan::scan(modem, sysloop);
 
     // log::info!("Initializing UI...");
     // ui::lcd_init().unwrap();
