@@ -1,123 +1,40 @@
 {
-    "version": 1,
-    "author": "paigack <460852283@qq.com>",
-    "editor": "wokwi",
-    "parts": [
-        {
-            "type": "board-esp32-s3-devkitc-1",
-            "id": "esp",
-            "top": 237.33,
-            "left": -78.88,
-            "rotate": 270,
-            "attrs": {}
-        },
-        {
-            "type": "wokwi-ili9341",
-            "id": "lcd1",
-            "top": -95.2,
-            "left": -77.1,
-            "attrs": {}
-        },
-        {
-            "type": "wokwi-pushbutton",
-            "id": "btn1",
-            "top": 217.4,
-            "left": -230.4,
-            "attrs": {}
-        }
-    ],
-    "connections": [
-        [
-            "esp:TX",
-            "$serialMonitor:RX",
-            "",
-            []
-        ],
-        [
-            "esp:RX",
-            "$serialMonitor:TX",
-            "",
-            []
-        ],
-        [
-            "lcd1:SCK",
-            "esp:21",
-            "orange",
-            [
-                "v23.2",
-                "h-0.01",
-                "v111.2"
-            ]
-        ],
-        [
-            "lcd1:MOSI",
-            "esp:47",
-            "blue",
-            [
-                "v13.6",
-                "h-0.01",
-                "v120.8"
-            ]
-        ],
-        [
-            "esp:GND.1",
-            "lcd1:GND",
-            "black",
-            [
-                "v28.85",
-                "h57.6",
-                "v-163.2",
-                "h-144"
-            ]
-        ],
-        [
-            "lcd1:VCC",
-            "esp:5V",
-            "red",
-            [
-                "v96",
-                "h144",
-                "v163.2",
-                "h-57.6"
-            ]
-        ],
-        [
-            "lcd1:CS",
-            "esp:41",
-            "gold",
-            [
-                "v48",
-                "h-67.2"
-            ]
-        ],
-        [
-            "esp:40",
-            "lcd1:D/C",
-            "green",
-            [
-                "v-76.8",
-                "h76.8"
-            ]
-        ],
-        [
-            "btn1:1.r",
-            "esp:0",
-            "gray",
-            [
-                "h48.2",
-                "v67.2",
-                "h105.6"
-            ]
-        ],
-        [
-            "btn1:2.r",
-            "esp:GND.2",
-            "black",
-            []
-        ]
-    ],
-    "serialMonitor": {
-        "display": "terminal"
+  "version": 1,
+  "author": "paigack <460852283@qq.com>",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": 237.33,
+      "left": -78.88,
+      "rotate": 270,
+      "attrs": { "flashSize": "32", "psramSize": "8" }
     },
-    "dependencies": {}
+    { "type": "wokwi-ili9341", "id": "lcd1", "top": -95.2, "left": -77.1, "attrs": {} },
+    { "type": "wokwi-microphone", "id": "mic", "top": 213.42, "left": 33.39, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 159.6,
+      "left": 128.6,
+      "attrs": { "color": "red" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "lcd1:SCK", "esp:21", "orange", [ "v23.2", "h-0.01", "v111.2" ] ],
+    [ "lcd1:MOSI", "esp:47", "blue", [ "v13.6", "h-0.01", "v120.8" ] ],
+    [ "lcd1:VCC", "esp:5V", "red", [ "v96", "h144", "v163.2", "h-57.6" ] ],
+    [ "lcd1:CS", "esp:41", "gold", [ "v105.6", "h-67.2" ] ],
+    [ "esp:40", "lcd1:D/C", "green", [ "v-19.2", "h76.8" ] ],
+    [ "esp:1", "mic:1", "green", [ "v-57.6", "h153.6" ] ],
+    [ "esp:13", "led1:A", "green", [ "v48.05", "h115.2", "v-259.2" ] ],
+    [ "esp:GND.3", "mic:2", "black", [ "v-28.8", "h9.6", "v-38.4" ] ],
+    [ "lcd1:GND", "esp:GND.2", "black", [ "v57.6", "h-115.2" ] ],
+    [ "led1:C", "esp:GND.3", "black", [ "v67.2", "h-86" ] ]
+  ],
+  "serialMonitor": { "display": "terminal" },
+  "dependencies": {}
 }
