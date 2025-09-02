@@ -13,7 +13,7 @@ export component MainWindow inherits Window {
     in-out property <string> title-text: "顶部状态栏文本";
     in-out property <string> body-text: "你好，这是中文测试文本。hello, this is english test txt";
     in-out property <string> bottom-text: "底部信息栏文本";
-
+    in-out property <string> font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
     VerticalBox {
         spacing: 1px;
 
@@ -23,7 +23,7 @@ export component MainWindow inherits Window {
             background: #2c3e50;
             Text {
                 text: root.title-text;
-                font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
+                font-family: root.font-family;
                 color: #ffffff;
                 vertical-alignment: center;
                 horizontal-alignment: center;
@@ -45,7 +45,7 @@ export component MainWindow inherits Window {
                 alignment: center;
                 Text {
                     text: root.body-text;
-                    font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
+                    font-family: root.font-family;
                     font-size: 20px;
                     color: #000000;
                     horizontal-alignment: center;
@@ -60,7 +60,7 @@ export component MainWindow inherits Window {
             background: #2c3e50;
             Text {
                 text: root.bottom-text;
-                font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
+                font-family: root.font-family;
                 color: #ffffff;
                 vertical-alignment: center;
                 horizontal-alignment: center;

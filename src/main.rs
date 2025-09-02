@@ -56,6 +56,7 @@ fn main() -> anyhow::Result<()> {
     let ip_addr = ip_info.ip.to_string();
 
     win.set_bottom_text(format!("IP地址: {ip_addr}").into());
+    win.set_font_family("Source Han Sans SC Normal".into());
 
     log::info!("Initializing timer...");
     let mut timer =
@@ -67,9 +68,11 @@ fn main() -> anyhow::Result<()> {
     log::info!("Setting up event loop...");
     slint::spawn_local(async move {
         for i in 0..5 {
-            timer.delay(5 * timer.tick_hz()).await.unwrap();
             log::info!("Echokit device is running...");
-            slwin.set_body_text(format!("Echokit device is running... {i}").into());
+            slwin.set_body_text(format!("嵌入式训练营 Echokit device is running... {i}").into());
+            slwin.set_font_family("Source Han Sans SC Normal".into());
+
+            timer.delay(5 * timer.tick_hz()).await.unwrap();
         }
     })
     .unwrap();
