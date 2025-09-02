@@ -54,18 +54,22 @@ fn main() -> anyhow::Result<()> {
             .unwrap();
     log::info!("Timer initialized");
 
+    let win = MainWindow::new().unwrap();
+
+    let slwin = win.clone_strong();
     log::info!("Setting up event loop...");
     slint::spawn_local(async move {
-        for _ in 0..5 {
+        for i in 0..5 {
             timer.delay(5 * timer.tick_hz()).await.unwrap();
             log::info!("Echokit device is running...");
+            slwin.set_body_text(format!("Echokit device is running... {i}").into());
         }
     })
     .unwrap();
     log::info!("Event loop setup complete");
 
-    MainWindow::new().unwrap().run().unwrap();
-    log::info!("MainWindow application started");
+    log::info!("MainWindow application start");
+    win.run().unwrap();
 
     // let gif_buf = include_bytes!("../assets/rust.gif");
     // let _ = ui::backgroud(&gif_buf[..]);

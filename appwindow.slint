@@ -10,8 +10,10 @@ import "SourceHanSansSC-Normal-Min.ttf";
 
 export component MainWindow inherits Window {
     in property <image> bg-image: @image-url("47135233.png");
-    in-out property <string> body: "你好，这是中文测试文本。hello, this is english test txt";
-    callback inc-count-2(int) -> int;
+    in-out property <string> title-text: "顶部状态栏文本";
+    in-out property <string> body-text: "你好，这是中文测试文本。hello, this is english test txt";
+    in-out property <string> bottom-text: "底部信息栏文本";
+
     VerticalBox {
         spacing: 1px;
 
@@ -20,7 +22,7 @@ export component MainWindow inherits Window {
             height: 10%;
             background: #2c3e50;
             Text {
-                text: "顶部状态栏文本";
+                text: root.title-text;
                 font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
                 color: #ffffff;
                 vertical-alignment: center;
@@ -42,8 +44,8 @@ export component MainWindow inherits Window {
                 padding: 3px;
                 alignment: center;
                 Text {
+                    text: root.body-text;
                     font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
-                    text: root.body;
                     font-size: 20px;
                     color: #000000;
                     horizontal-alignment: center;
@@ -57,8 +59,8 @@ export component MainWindow inherits Window {
             height: 10%;
             background: #2c3e50;
             Text {
+                text: root.bottom-text;
                 font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
-                text: "底部信息栏文本";
                 color: #ffffff;
                 vertical-alignment: center;
                 horizontal-alignment: center;
