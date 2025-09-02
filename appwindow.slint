@@ -1,13 +1,66 @@
-import { AboutSlint, VerticalBox } from "std-widgets.slint";
+import { VerticalBox, HorizontalBox, ComboBox } from "std-widgets.slint";
+
+// // 导入中文字体文件。请确保路径和文件名正确。
+// @font-face {
+//     src: url("MSYH.ttf");
+//     name: "MSYH";
+// }
+
+import "SourceHanSansSC-Normal-Min.ttf";
 
 export component MainWindow inherits Window {
+    in property <image> bg-image: @image-url("47135233.png");
+    in-out property <string> body: "你好，这是中文测试文本。hello, this is english test txt";
+    callback inc-count-2(int) -> int;
     VerticalBox {
-        Text {
-            text: "Hello World! ";
+        // 顶部状态栏
+        Rectangle {
+            height: 10%;
+            // background: #2c3e50;
+            Text {
+                text: "顶部状态栏文本";
+                font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
+                color: #000000;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
         }
 
-        AboutSlint {
-            preferred-height: 150px;
+        // 中间可视化区域
+        Rectangle {
+            height: 70%;
+            // background: #ffffff;
+            Image {
+                source: bg-image;
+                image-fit: cover;
+                image-rendering: smooth;
+            }
+
+            VerticalBox {
+                padding: 3px;
+                alignment: center;
+                Text {
+                    font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
+                    text: root.body;
+                    font-size: 20px;
+                    color: #000000;
+                    horizontal-alignment: center;
+                    wrap: TextWrap.word-wrap;
+                }
+            }
+        }
+
+        // 底部信息栏
+        Rectangle {
+            height: 10%;
+            // background: #2c3e50;
+            Text {
+                font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
+                text: "底部信息栏文本";
+                color: #000000;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
         }
     }
 }

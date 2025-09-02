@@ -155,7 +155,7 @@ pub fn bt(
 
     ble_advertising.lock().set_data(
         BLEAdvertisementData::new()
-            .name(&format!("GAIA-ESP32-{}", ble_addr))
+            .name(&format!("Pai ESP32S3-{}", ble_addr))
             .add_service_uuid(SERVICE_ID),
     )?;
     ble_advertising.lock().start()?;

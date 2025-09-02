@@ -145,7 +145,7 @@ impl slint::platform::Platform for EspPlatform {
         log::info!("Entering main loop");
 
         loop {
-            log::info!("Processing events");
+            // log::info!("Processing events");
 
             slint::platform::update_timers_and_animations();
 
@@ -159,9 +159,9 @@ impl slint::platform::Platform for EspPlatform {
 
             // Draw the scene if something needs to be drawn.
             self.window.draw_if_needed(|renderer| {
-                log::info!("Drawing the scene");
+                // log::info!("Drawing the scene");
                 renderer.render(&mut buffer1, DISPLAY_WIDTH);
-                log::info!("Scene drawn, flushing to display");
+                // log::info!("Scene drawn, flushing to display");
                 unsafe {
                     let e = esp_idf_svc::sys::esp_lcd_panel_draw_bitmap(
                         self.panel_handle,
@@ -172,23 +172,23 @@ impl slint::platform::Platform for EspPlatform {
                         buffer1.as_ptr().cast(),
                     );
                     if e != 0 {
-                        log::warn!("flush_display error: {}", e);
+                        // log::warn!("flush_display error: {}", e);
                     }
-                    log::info!("flush_display drawn to display");
+                    // log::info!("flush_display drawn to display");
                 };
-                log::info!("Swapping buffers");
+                // log::info!("Swapping buffers");
                 // core::mem::swap(&mut buffer1, &mut buffer2);
             });
 
-            log::info!("Drawing completed, checking for active animations");
+            // log::info!("Drawing completed, checking for active animations");
 
             // Try to put the MCU to sleep
             if !self.window.has_active_animations() {
-                log::info!("No active animations, putting MCU to sleep");
+                // log::info!("No active animations, putting MCU to sleep");
                 continue;
             }
 
-            log::info!("Active animations, yielding to the scheduler");
+            // log::info!("Active animations, yielding to the scheduler");
             // FIXME
             esp_idf_svc::hal::task::do_yield();
         }
