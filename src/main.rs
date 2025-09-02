@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use esp_idf_svc::eventloop::EspSystemEventLoop;
+use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::peripheral::Peripheral};
 
 mod app;
 mod audio;
@@ -10,7 +10,7 @@ mod hal;
 mod network;
 mod protocol;
 mod ui;
-mod wifi_scan;
+mod wifi;
 mod ws;
 
 slint::include_modules!();
@@ -28,6 +28,12 @@ fn main() -> anyhow::Result<()> {
     esp_idf_svc::log::EspLogger::initialize_default();
     log::info!("Starting Echokit device...");
 
+    log::info!("Initializing ESP32 platform...");
+    esp32::init();
+    log::info!("ESP32 platform initialized");
+
+    let win = MainWindow::new().unwrap();
+
     let peripherals = esp_idf_svc::hal::prelude::Peripherals::take().unwrap();
     let sysloop = EspSystemEventLoop::take()?;
 
@@ -36,25 +42,26 @@ fn main() -> anyhow::Result<()> {
     log::info!("Initializing audio...");
     crate::hal::audio_init();
 
-    let modem = peripherals.modem;
-    wifi_scan::scan(modem, sysloop);
+    let mut modem: esp_idf_svc::hal::modem::Modem = peripherals.modem;
+    let modem2: esp_idf_svc::hal::modem::Modem;
+    unsafe {
+        modem2 = modem.clone_unchecked();
+    }
 
-    // log::info!("Initializing UI...");
-    // ui::lcd_init().unwrap();
+    wifi::scan(modem, sysloop.clone());
+    let wifi_conn = wifi::connect("Wokwi-GUEST", "", modem2, sysloop).unwrap();
+    log_heap();
 
-    // log_heap();
+    let ip_info = wifi_conn.ap_netif().get_ip_info().unwrap();
+    let ip_addr = ip_info.ip.to_string();
 
-    log::info!("Initializing ESP32 platform...");
-    esp32::init();
-    log::info!("ESP32 platform initialized");
+    win.set_bottom_text(format!("IP地址: {ip_addr}").into());
 
     log::info!("Initializing timer...");
     let mut timer =
         esp_idf_svc::hal::timer::TimerDriver::new(peripherals.timer00, &Default::default())
             .unwrap();
     log::info!("Timer initialized");
-
-    let win = MainWindow::new().unwrap();
 
     let slwin = win.clone_strong();
     log::info!("Setting up event loop...");
