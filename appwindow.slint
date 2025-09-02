@@ -13,14 +13,16 @@ export component MainWindow inherits Window {
     in-out property <string> body: "你好，这是中文测试文本。hello, this is english test txt";
     callback inc-count-2(int) -> int;
     VerticalBox {
+        spacing: 1px;
+
         // 顶部状态栏
         Rectangle {
             height: 10%;
-            // background: #2c3e50;
+            background: #2c3e50;
             Text {
                 text: "顶部状态栏文本";
                 font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
-                color: #000000;
+                color: #ffffff;
                 vertical-alignment: center;
                 horizontal-alignment: center;
             }
@@ -29,7 +31,7 @@ export component MainWindow inherits Window {
         // 中间可视化区域
         Rectangle {
             height: 70%;
-            // background: #ffffff;
+            background: #ffffff;
             Image {
                 source: bg-image;
                 image-fit: cover;
@@ -53,11 +55,11 @@ export component MainWindow inherits Window {
         // 底部信息栏
         Rectangle {
             height: 10%;
-            // background: #2c3e50;
+            background: #2c3e50;
             Text {
                 font-family: "Source Han Sans SC Normal"; // 字体名称需与 TTF 内部的字体名一致
                 text: "底部信息栏文本";
-                color: #000000;
+                color: #ffffff;
                 vertical-alignment: center;
                 horizontal-alignment: center;
             }
