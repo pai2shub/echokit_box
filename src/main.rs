@@ -5,10 +5,10 @@ use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::peripheral::Peripheral};
 mod app;
 mod audio;
 mod bt;
-mod esp32;
 mod hal;
 mod network;
 mod protocol;
+mod slint_esp32;
 mod ui;
 mod wifi;
 mod ws;
@@ -29,7 +29,7 @@ fn main() -> anyhow::Result<()> {
     log::info!("Starting Echokit device...");
 
     log::info!("Initializing ESP32 platform...");
-    esp32::init();
+    slint_esp32::init();
     log::info!("ESP32 platform initialized");
 
     let win = MainWindow::new().unwrap();
@@ -39,8 +39,8 @@ fn main() -> anyhow::Result<()> {
 
     log_heap();
 
-    log::info!("Initializing audio...");
-    crate::hal::audio_init();
+    // log::info!("Initializing audio...");
+    // crate::hal::audio_init();
 
     let mut modem: esp_idf_svc::hal::modem::Modem = peripherals.modem;
     let modem2: esp_idf_svc::hal::modem::Modem;
@@ -56,7 +56,6 @@ fn main() -> anyhow::Result<()> {
     let ip_addr = ip_info.ip.to_string();
 
     win.set_bottom_text(format!("IP地址: {ip_addr}").into());
-    win.set_font_family("Source Han Sans SC Normal".into());
 
     log::info!("Initializing timer...");
     let mut timer =
@@ -67,12 +66,14 @@ fn main() -> anyhow::Result<()> {
     let slwin = win.clone_strong();
     log::info!("Setting up event loop...");
     slint::spawn_local(async move {
-        for i in 0..5 {
-            log::info!("Echokit device is running...");
-            slwin.set_body_text(format!("嵌入式训练营 Echokit device is running... {i}").into());
-            slwin.set_font_family("Source Han Sans SC Normal".into());
+        loop {
+            for i in 0..5 {
+                log::info!("Echokit device is running...");
+                slwin
+                    .set_body_text(format!("嵌入式训练营 Echokit device is running... {i}").into());
 
-            timer.delay(5 * timer.tick_hz()).await.unwrap();
+                timer.delay(5 * timer.tick_hz()).await.unwrap();
+            }
         }
     })
     .unwrap();
@@ -80,43 +81,6 @@ fn main() -> anyhow::Result<()> {
 
     log::info!("MainWindow application start");
     win.run().unwrap();
-
-    // let gif_buf = include_bytes!("../assets/rust.gif");
-    // let _ = ui::backgroud(&gif_buf[..]);
-    // std::thread::sleep(std::time::Duration::from_secs(10));
-
-    // // Configures the button
-    // log::info!("Configuring button...");
-    // let mut button = esp_idf_svc::hal::gpio::PinDriver::input(peripherals.pins.gpio0)?;
-    // button.set_pull(esp_idf_svc::hal::gpio::Pull::Up)?;
-    // button.set_interrupt_type(esp_idf_svc::hal::gpio::InterruptType::PosEdge)?;
-    // log::info!("Button configured.");
-
-    // let b: tokio::runtime::Runtime = tokio::runtime::Builder::new_current_thread()
-    //     .enable_all()
-    //     .build()?;
-    // log::info!("Starting tokio runtime...");
-
-    // log::info!("Setting up device...");
-    // let mut gui = ui::UI::new(None).unwrap();
-
-    // log_heap();
-
-    // log::info!("Hello echokit, by Rust ESP32-S3");
-    // gui.state = "Hello echokit, by Rust ESP32-S3".to_string();
-    // gui.text.clear();
-    // gui.display_flush().unwrap();
-
-    // log_heap();
-
-    loop {
-        std::thread::sleep(std::time::Duration::from_secs(10));
-        log::info!("Device is running...");
-
-        // gui.state = "Device is running...".to_string();
-        // gui.text.clear();
-        // gui.display_flush().unwrap();
-    }
 
     Ok(())
 }
