@@ -56,7 +56,7 @@ fn main() -> anyhow::Result<()> {
     let ip_info = wifi_conn.ap_netif().get_ip_info().unwrap();
     let ip_addr = ip_info.ip.to_string();
 
-    win.set_bottom_text(format!("IP地址: {ip_addr}").into());
+    // win.set_bottom_text(format!("IP地址: {ip_addr}").into());
 
     log::info!("Initializing timer...");
     let mut timer =
