@@ -5,15 +5,16 @@ use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::peripheral::Peripheral};
 mod app;
 mod audio;
 mod bt;
+mod egui_esp32;
 mod hal;
 mod network;
 mod protocol;
-mod slint_esp32;
+// mod slint_esp32;
 mod ui;
 mod wifi;
 mod ws;
 
-slint::include_modules!();
+// slint::include_modules!();
 
 #[derive(Debug, Clone)]
 struct Setting {
@@ -29,10 +30,10 @@ fn main() -> anyhow::Result<()> {
     log::info!("Starting Echokit device...");
 
     log::info!("Initializing ESP32 platform...");
-    slint_esp32::init();
+    // slint_esp32::init();
     log::info!("ESP32 platform initialized");
 
-    let win = MainWindow::new().unwrap();
+    // let win = MainWindow::new().unwrap();
 
     let peripherals = esp_idf_svc::hal::prelude::Peripherals::take().unwrap();
     let sysloop = EspSystemEventLoop::take()?;
@@ -63,24 +64,24 @@ fn main() -> anyhow::Result<()> {
             .unwrap();
     log::info!("Timer initialized");
 
-    let slwin = win.clone_strong();
-    log::info!("Setting up event loop...");
-    slint::spawn_local(async move {
-        loop {
-            for i in 0..5 {
-                log::info!("Echokit device is running...");
-                slwin
-                    .set_body_text(format!("嵌入式训练营 Echokit device is running... {i}").into());
+    // let slwin = win.clone_strong();
+    // log::info!("Setting up event loop...");
+    // slint::spawn_local(async move {
+    //     loop {
+    //         for i in 0..5 {
+    //             log::info!("Echokit device is running...");
+    //             slwin
+    //                 .set_body_text(format!("嵌入式训练营 Echokit device is running... {i}").into());
 
-                timer.delay(5 * timer.tick_hz()).await.unwrap();
-            }
-        }
-    })
-    .unwrap();
-    log::info!("Event loop setup complete");
+    //             timer.delay(5 * timer.tick_hz()).await.unwrap();
+    //         }
+    //     }
+    // })
+    // .unwrap();
+    // log::info!("Event loop setup complete");
 
-    log::info!("MainWindow application start");
-    win.run().unwrap();
+    // log::info!("MainWindow application start");
+    // win.run().unwrap();
 
     Ok(())
 }

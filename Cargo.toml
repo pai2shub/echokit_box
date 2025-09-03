@@ -72,6 +72,7 @@ bytes = "1.10.0"
 
 qrcode = { version = "0.14.1", default-features = false, features = [] }
 slint = { version = "1.12.1", default-features = false, features = ["compat-1-2", "unsafe-single-threaded", "libm", "renderer-software"] }
+egui = "0.29.1"
 
 [build-dependencies]
 embuild = "0.33"
